@@ -102,6 +102,23 @@
   footer{padding:32px 6%;text-align:center;font-size:12.5px;color:var(--mut);border-top:1px solid var(--linha);}
   footer a{color:var(--emerald);font-weight:700;}
 
+  /* BONUS TOAST */
+  .bonus-toast{position:fixed;left:20px;bottom:-420px;z-index:900;width:320px;background:#fff;border:1px solid var(--linha);border-radius:20px;padding:20px 20px 22px;box-shadow:0 20px 50px rgba(13,21,18,.18);transition:bottom .5s cubic-bezier(.2,.8,.2,1);}
+  .bonus-toast.show{bottom:20px;}
+  .bonus-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:var(--mut);cursor:pointer;line-height:1;}
+  .bonus-badge{display:inline-flex;align-items:center;gap:7px;background:var(--emerald-fraco);color:var(--emerald);font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:5px 12px;border-radius:100px;margin-bottom:12px;}
+  .bonus-badge .p{width:6px;height:6px;border-radius:50%;background:var(--emerald2);animation:pulse 1.6s infinite;}
+  .bonus-title{font-size:19px;font-weight:900;letter-spacing:-.01em;margin-bottom:6px;}
+  .bonus-sub{font-size:13px;color:var(--mut);line-height:1.5;margin-bottom:14px;}
+  .bonus-ticker{background:var(--bg);border:1px solid var(--linha);border-radius:12px;padding:14px 16px;margin-bottom:16px;overflow:hidden;height:46px;position:relative;}
+  .bonus-item{display:flex;justify-content:space-between;align-items:center;opacity:1;transition:opacity .25s ease;}
+  .bonus-item.fade{opacity:0;}
+  .bonus-item-name{font-size:13.5px;font-weight:700;}
+  .bonus-item-value{font-size:14px;font-weight:900;color:var(--emerald);}
+  .bonus-cta{display:block;text-align:center;background:var(--dark);color:#fff;padding:13px;border-radius:100px;font-weight:800;font-size:13.5px;transition:.2s;}
+  .bonus-cta:hover{background:var(--emerald);}
+  @media(max-width:420px){.bonus-toast{left:12px;right:12px;width:auto;}}
+
   @media(max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
     .passos{grid-template-columns:1fr;}
@@ -267,6 +284,20 @@
   Dúvidas? Use o chat no canto da tela.
 </footer>
 
+<div class="bonus-toast" id="bonusToast">
+  <button class="bonus-close" id="bonusClose" aria-label="Fechar">×</button>
+  <div class="bonus-badge"><span class="p"></span> BÔNUS ATIVO</div>
+  <div class="bonus-title">⚡ Ganhe até R$ 30/h agora</div>
+  <p class="bonus-sub">Grave estas tarefas turbinadas no app e ganhe mais por hora aprovada:</p>
+  <div class="bonus-ticker">
+    <div class="bonus-item" id="bonusItem">
+      <span class="bonus-item-name">Montar / desmontar móveis</span>
+      <span class="bonus-item-value">R$ 30/h</span>
+    </div>
+  </div>
+  <a class="bonus-cta" href="https://ai.hub.xyz/r/B1AB4PET" target="_blank" rel="noopener">Quero ver as tarefas turbinadas</a>
+</div>
+
 <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
 <script type="module">
   import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
@@ -291,6 +322,46 @@
       if (!wasOpen) item.classList.add('open');
     });
   });
+
+  // Banner de bônus (tarefas turbinadas)
+  (function(){
+    const tarefas = [
+      { nome: 'Montar / desmontar móveis', valor: 'R$ 30/h' },
+      { nome: 'Limpeza de calhas', valor: 'R$ 30/h' },
+      { nome: 'Pendurar quadros e espelhos', valor: 'R$ 30/h' },
+      { nome: 'Higiene e banho de pet', valor: 'R$ 28/h' },
+      { nome: 'Organizar garagem', valor: 'R$ 27/h' },
+      { nome: 'Varrer a varanda', valor: 'R$ 25/h' }
+    ];
+    const toast = document.getElementById('bonusToast');
+    const closeBtn = document.getElementById('bonusClose');
+    const itemEl = document.getElementById('bonusItem');
+    let idx = 0;
+    let cycleTimer = null;
+
+    function renderItem(){
+      itemEl.classList.add('fade');
+      setTimeout(() => {
+        idx = (idx + 1) % tarefas.length;
+        itemEl.querySelector('.bonus-item-name').textContent = tarefas[idx].nome;
+        itemEl.querySelector('.bonus-item-value').textContent = tarefas[idx].valor;
+        itemEl.classList.remove('fade');
+      }, 250);
+    }
+
+    if (!sessionStorage.getItem('bonusToastClosed')) {
+      setTimeout(() => {
+        toast.classList.add('show');
+        cycleTimer = setInterval(renderItem, 2800);
+      }, 4000);
+    }
+
+    closeBtn.addEventListener('click', () => {
+      toast.classList.remove('show');
+      if (cycleTimer) clearInterval(cycleTimer);
+      sessionStorage.setItem('bonusToastClosed', '1');
+    });
+  })();
 </script>
 
 </body>
